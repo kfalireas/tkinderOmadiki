@@ -63,29 +63,28 @@ def create_gui(df):
     root.mainloop()
 
 def compare_dates(df):
-    df.set_index('id', inplace=True)
-    copied_df = df.copy(deep=True)
-    copied_df.rename(columns={
-        'date': 'Ημερομηνία', 'new_cases': 'Νέα Κρούσματα', 'confirmed': 'Επιβεβαιομένα Κρούσματα',
-        'new_deaths': 'Νέες Απώλειες', 'total_deaths': 'Συνολικές Απώλειες', 'new_tests': 'Νέα Τέστ',
-        'positive_tests': "Θετικά Τέστ", 'new_selftest': 'Νέα Σελφτέστ', 'new_ag_tests': 'Νέα Τέστ Αντισωμάτων',
-        'ag_tests': 'Τέστ Αντισωμάτων', 'total_tests': 'Συνολικά Τέστ', 'new_critical': 'Νέοι Νοσηλευόμενοι Σε Κρίσιμη',
-        'total_vaccinated_crit': 'Εμβολιασμένοι Σε Κρίσιμη', 'total_unvaccinated_crit': 'Μη Εμβολιασμένοι Σε Κρίσιμη',
-        'total_critical': 'Συνολικός Αριθμός Νοσηλευόμενων Σε Κρίσιμη', 'hospitalized': 'Σε Νοσηλεία',
-        'icu_percent': 'Ποσοστό σε ΜΕΘ', 'icu_out': 'Εκτώς της ΜΕΘ', 'new_active': 'Νέα Ενεργά Κρούσματα',
-        'active': 'Ενεργά Κρούσματα', 'recovered': 'Που Εχει Αναρρώσει', 'total_vaccinations': 'Συνολικοί Εμβολιασμοί',
-        'reinfections': 'Επαναμολύνσεις'}, inplace=True)
-    copied_df = copied_df.drop(columns=[
-        'total_selftest', 'total_foreign', 'total_unknown', 'beds_percent', 'discharged', 'total_domestic', 'total_reinfections'])
 
-    col_start = copied_df.columns.get_loc('Νέα Κρούσματα')
+    df.set_index('id',inplace=True)                                                                         #To id θα γίνει το νέο index
+    print("Καρτέλα Ημερήσιας Επισκόπησης: (Προηγούμενη Μέρα-Τωρινή Μέρα-Ποσοστιαία Διαφορά)")
+    copied_df = df.copy(deep=True)                                                                          #Δημιουργία Αντιγράφου και μετονομασία στήλεων
+    copied_df.rename(columns={'date':'Ημερομηνία','new_cases':'Νέα Κρούσματα','confirmed':'Επιβεβαιομένα Κρούσματα','new_deaths':'Νέες Απώλειες','total_deaths':'Συνολικές Απώλειες',
+                       'new_tests':'Νέα Τέστ','positive_tests':"Θετικά Τέστ",'new_selftest':'Νέα Σελφτέστ','new_ag_tests':'Νέα Τέστ Αντισωμάτων',
+                       'ag_tests':'Τέστ Αντισωμάτων','total_tests':'Συνολικά Τέστ','new_critical':'Νέοι Νοσηλευόμενοι Σε Κρίσιμη','total_vaccinated_crit':'Εμβολιασμένοι Σε Κρίσιμη',
+                       'total_unvaccinated_crit':'Μη Εμβολιασμένοι Σε Κρίσιμη','total_critical':'Συνολικός Αριθμός Νοσηλευόμενων Σε Κρίσιμη','hospitalized':'Σε Νοσηλεία','icu_percent':'Ποσοστό σε ΜΕΘ',
+                       'icu_out':'Εκτώς της ΜΕΘ','new_active':'Νέα Ενεργά Κρούσματα','active':'Ενεργά Κρούσματα','recovered':'Που Εχει Αναρρώσει','total_vaccinations':'Συνολικοί Εμβολιασμοί','reinfections':'Επαναμολύνσεις'},inplace=True)
+    copied_df = copied_df.drop(columns=['total_selftest','total_foreign','total_unknown','beds_percent','discharged','total_domestic','total_reinfections'])       #Αφαίρεση κάποιων δεδομένων
+
+
+
+    col_start = copied_df.columns.get_loc('Νέα Κρούσματα')                  #Επιλέγω ποιες στήλες θα εμφανιστούν
     col_end = copied_df.columns.get_loc('Επαναμολύνσεις')
-    df3 = copied_df.iloc[[-2, -1], col_start:col_end]
-    pct = df3.pct_change()
+    df3 = copied_df.iloc[[-2,-1],col_start:col_end]                          # Επιλέγω 2 τελευταίες γραμμές (2 τελευταίες μέρες)
+    pct = df3.pct_change()                                                   #Υπολογίζω ποσοστιαία διαφορά των δύο μερών
     pct2 = pct.drop(pct.index[[0]])
 
-    pct3 = pd.concat([df3, pct2])
-    pct3.index = ['Προηγούμενη', 'Τωρινή', 'Διαφορά']
+    pct3 = pd.concat([df3,pct2])                                             #Ενώνω τις 2 καρτέλες,θα προβληθούν σε μορφή αναστρόφου πίνακα
+    pct3.index = ['Προηγούμενη','Τωρινή','Διαφορά']
+    print(pct3.transpose())
 
      # Δημιουργία νέου παραθύρου για εμφάνιση δεδομένων
      # Εδω υπάρχει ενα bug αμα το πατήσω μια φο΄ρα το κουμπί ανοιγει κανονικά το παράθυρο και εμφανίζονται τα δεδομένα αμα το ξαναπατησω μετα δεν ανοίγει
