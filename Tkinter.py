@@ -1,123 +1,183 @@
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
+import warnings
 import tkinter as tk
-from tkinter import ttk
-from sklearn.linear_model import LinearRegression
-from datetime import datetime
+from tkinter import ttk, scrolledtext
 
-# Ανάγνωση του αρχείου CSV
-url = "https://raw.githubusercontent.com/Sandbird/covid19-Greece/master/cases.csv"
-data = pd.read_csv(url)
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Μετατροπή της στήλης 'date' σε datetime
-data['date'] = pd.to_datetime(data['date'], format='%Y-%m-%d')
-
-# Δημιουργία του γραφικού περιβάλλοντος χρήστη με tkinter
-root = tk.Tk()
-root.title("COVID-19 Dashboard for Greece")
-
-# Δημιουργία πλαισίων για την εμφάνιση δεδομένων
-frame1 = ttk.LabelFrame(root, text="Ημερήσια Επισκόπηση")
-frame1.grid(row=0, column=0, padx=10, pady=10)
-
-frame2 = ttk.LabelFrame(root, text="Συνολική Επισκόπηση")
-frame2.grid(row=1, column=0, padx=10, pady=10)
-
-frame3 = ttk.LabelFrame(root, text="Εξέλιξη Εμβολιασμών")
-frame3.grid(row=0, column=1, padx=10, pady=10)
-
-frame4 = ttk.LabelFrame(root, text="Έλεγχοι Αντισωμάτων")
-frame4.grid(row=1, column=1, padx=10, pady=10)
-
-frame5 = ttk.LabelFrame(root, text="Επιδημιολογικοί Δείκτες")
-frame5.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
-
-# Λειτουργίες για την εμφάνιση δεδομένων
-def show_daily_overview():
-    latest_data = data.iloc[-1]
-    previous_data = data.iloc[-2]
+def main():
+    url = "https://raw.githubusercontent.com/Sandbird/covid19-Greece/master/cases.csv"
+    df = pd.read_csv(url)
     
-    daily_info = f"Ημερομηνία: {latest_data['date'].date()}\n" \
-                 f"Νέα Κρούσματα: {latest_data['cases']} ({((latest_data['cases'] - previous_data['cases']) / previous_data['cases']) * 100:.2f}% από την προηγούμενη ημέρα)\n" \
-                 f"Απώλειες: {latest_data['deaths']}\n" \
-                 f"Σε κρίσιμη κατάσταση: {latest_data['intensive_care']}\n" \
-                 f"Νοσηλευόμενοι: {latest_data['hospitalized']}"
-    
-    label_daily.config(text=daily_info)
+    # Δημιουργούμε το γραφικό περιβάλλον
+    create_gui(df)
 
-def show_total_overview():
-    total_cases = data['cases'].sum()
-    total_deaths = data['deaths'].sum()
-    total_intensive_care = data['intensive_care'].sum()
-    total_hospitalized = data['hospitalized'].sum()
-    
-    total_info = f"Συνολικά Κρούσματα: {total_cases}\n" \
-                 f"Συνολικές Απώλειες: {total_deaths}\n" \
-                 f"Συνολικές Εντατικές Θεραπείες: {total_intensive_care}\n" \
-                 f"Συνολικοί Νοσηλευόμενοι: {total_hospitalized}"
-    
-    label_total.config(text=total_info)
+def create_gui(df):
+    root = tk.Tk()
+    root.title("Covid-19 Greece Data Analysis")
+    root.geometry("800x600")
+    root.configure(bg="#dfe3ee")  # Ανοιχτό γκρι-μπλε φόντο, μπορούμε απο οποιαδήποτε παλέτα να πάρουμε χρώματα και να αλλάξουμε το γκρι αμα θέλετε αλλα ειναι το πιο ευδιακρίτο χρώμα απο αυτά που δοκίμασα
 
-def show_vaccination_overview():
-    plt.figure(figsize=(10, 6))
-    sns.lineplot(x='date', y='vaccinated', data=data)
-    plt.title("Εξέλιξη Εμβολιασμών στην Ελλάδα")
-    plt.xlabel("Ημερομηνία")
-    plt.ylabel("Αριθμός Εμβολιασμών")
-    plt.grid(True)
+    style = ttk.Style()
+    style.configure("TButton", font=("Helvetica", 12), padding=10)
+    style.configure("TLabel", font=("Helvetica", 16), background="#dfe3ee")
+    style.configure("TFrame", background="#dfe3ee")
+
+    # Εδω μπορούμε να προσθέσουμε μια εικόνα αμα θέλουμε, θα κάνει λίγο πιο ωραίο το αρχικό παράθυρο
+    try:
+        logo = tk.PhotoImage(file="logo.png")  
+        logo_label = ttk.Label(root, image=logo)
+        logo_label.pack(pady=10)
+    except:
+        pass
+
+    title_label = ttk.Label(root, text="Covid-19 Greece Data Analysis")
+    title_label.pack(pady=20)
+
+    # Δημιουργία πλαισίου για τις κατηγορίες
+    frame = ttk.Frame(root)
+    frame.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+
+    # Πλαίσιο για τα κουμπιά
+    data_frame = ttk.Labelframe(frame, text="Data Analysis", padding=20)
+    data_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
+    vis_frame = ttk.Labelframe(frame, text="Visualizations", padding=20)
+    vis_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+
+    frame.grid_columnconfigure(0, weight=1)
+    frame.grid_columnconfigure(1, weight=1)
+    frame.grid_rowconfigure(0, weight=1)
+
+    # Προσθέτουμε κουμπιά για κάθε συνάρτηση
+    ttk.Button(data_frame, text="Compare Dates", command=lambda: compare_dates(df)).pack(pady=5, fill=tk.X)
+    ttk.Button(vis_frame, text="Pie Chart 1", command=lambda: pie_1(df)).pack(pady=5, fill=tk.X)
+    ttk.Button(vis_frame, text="Pie Chart 2", command=lambda: pie_2(df)).pack(pady=5, fill=tk.X)
+    ttk.Button(vis_frame, text="Vaccinations and Actives", command=lambda: vaccinations_and_actives(df)).pack(pady=5, fill=tk.X)
+    ttk.Button(vis_frame, text="Cases and Deaths", command=lambda: cases_deaths(df)).pack(pady=5, fill=tk.X)
+    ttk.Button(vis_frame, text="Hospitalized", command=lambda: hospitalized(df)).pack(pady=5, fill=tk.X)
+
+    root.mainloop()
+
+def compare_dates(df):
+    df.set_index('id', inplace=True)
+    copied_df = df.copy(deep=True)
+    copied_df.rename(columns={
+        'date': 'Ημερομηνία', 'new_cases': 'Νέα Κρούσματα', 'confirmed': 'Επιβεβαιομένα Κρούσματα',
+        'new_deaths': 'Νέες Απώλειες', 'total_deaths': 'Συνολικές Απώλειες', 'new_tests': 'Νέα Τέστ',
+        'positive_tests': "Θετικά Τέστ", 'new_selftest': 'Νέα Σελφτέστ', 'new_ag_tests': 'Νέα Τέστ Αντισωμάτων',
+        'ag_tests': 'Τέστ Αντισωμάτων', 'total_tests': 'Συνολικά Τέστ', 'new_critical': 'Νέοι Νοσηλευόμενοι Σε Κρίσιμη',
+        'total_vaccinated_crit': 'Εμβολιασμένοι Σε Κρίσιμη', 'total_unvaccinated_crit': 'Μη Εμβολιασμένοι Σε Κρίσιμη',
+        'total_critical': 'Συνολικός Αριθμός Νοσηλευόμενων Σε Κρίσιμη', 'hospitalized': 'Σε Νοσηλεία',
+        'icu_percent': 'Ποσοστό σε ΜΕΘ', 'icu_out': 'Εκτώς της ΜΕΘ', 'new_active': 'Νέα Ενεργά Κρούσματα',
+        'active': 'Ενεργά Κρούσματα', 'recovered': 'Που Εχει Αναρρώσει', 'total_vaccinations': 'Συνολικοί Εμβολιασμοί',
+        'reinfections': 'Επαναμολύνσεις'}, inplace=True)
+    copied_df = copied_df.drop(columns=[
+        'total_selftest', 'total_foreign', 'total_unknown', 'beds_percent', 'discharged', 'total_domestic', 'total_reinfections'])
+
+    col_start = copied_df.columns.get_loc('Νέα Κρούσματα')
+    col_end = copied_df.columns.get_loc('Επαναμολύνσεις')
+    df3 = copied_df.iloc[[-2, -1], col_start:col_end]
+    pct = df3.pct_change()
+    pct2 = pct.drop(pct.index[[0]])
+
+    pct3 = pd.concat([df3, pct2])
+    pct3.index = ['Προηγούμενη', 'Τωρινή', 'Διαφορά']
+
+     # Δημιουργία νέου παραθύρου για εμφάνιση δεδομένων
+     # Εδω υπάρχει ενα bug αμα το πατήσω μια φο΄ρα το κουμπί ανοιγει κανονικά το παράθυρο και εμφανίζονται τα δεδομένα αμα το ξαναπατησω μετα δεν ανοίγει
+    data_window = tk.Toplevel()
+    data_window.title("Compare Dates")
+    data_window.geometry("600x400")
+    data_window.configure(bg="#f0f0f0")
+
+    text_area = scrolledtext.ScrolledText(data_window, wrap=tk.WORD, width=80, height=20)
+    text_area.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+    text_area.insert(tk.INSERT, pct3.transpose().to_string())
+
+def cases_deaths(df):
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1)
+    ax1.plot(df.date, df.confirmed, label="Επιβεβαιωμένα Κρούσματα")
+    ax2.plot(df.date, df.total_deaths, label="Συνολικές Απώλειες")
+
+    ax1.legend()
+    ax1.set_title("Επιβεβαιωμένα Κρούσματα")
+    ax1.set_xlabel('Ημερομηνίες (Ανα εξάμηνα)')
+    ax1.set_ylabel("Κρούσματα")
+    plt.sca(ax1)
+    plt.xticks(df.date[::182])
+
+    ax2.legend()
+    ax2.set_title("Συνολικές Απώλειες")
+    ax2.set_xlabel('Ημερομηνίες (Ανα εξάμηνα)')
+    ax2.set_ylabel("Απώλειες")
+    plt.ticklabel_format(axis="y", style='plain')
+    plt.sca(ax2)
+    plt.xticks(df.date[::182])
+
+    plt.tight_layout()
     plt.show()
 
-def show_antibody_tests_overview():
-    plt.figure(figsize=(10, 6))
-    sns.lineplot(x='date', y='antibody_tests', data=data)
-    plt.title("Έλεγχοι Αντισωμάτων στην Ελλάδα")
-    plt.xlabel("Ημερομηνία")
-    plt.ylabel("Αριθμός Ελέγχων")
-    plt.grid(True)
+def vaccinations_and_actives(df):
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1)
+
+    ax1.plot(df.date, df.total_vaccinations, label="Αριθμός εμβολιασμών")
+    ax2.plot(df.date, df.active)
+
+    ax1.set_title("Συνολικοί εμβολιασμοί")
+    ax1.set_xlabel('Ημερομηνίες (Ανα εξάμηνα)')
+    ax1.set_ylabel("Εμβολιασμοί")
+    plt.sca(ax1)
+    plt.ticklabel_format(axis="y", style='plain')
+    plt.xticks(df.date[::182])
+
+    ax2.set_title("Συνολική Εξέλιξη Ενεργών Κρουσμάτων")
+    ax2.set_xlabel('Ημερομηνίες (Ανα εξάμηνα)')
+    ax2.set_ylabel("Αριθμός Ενεργών Κρουσμάτων")
+    plt.sca(ax2)
+    plt.xticks(df.date[::182])
+
+    plt.tight_layout()
     plt.show()
 
-def show_epidemiological_indicators():
-    total_cases = data['cases'].sum()
-    total_deaths = data['deaths'].sum()
-    total_recovered = data['recovered'].sum()
-    
-    # Υπολογισμός επιδημιολογικών δεικτών
-    case_fatality_rate = (total_deaths / total_cases) * 100
-    recovery_rate = (total_recovered / total_cases) * 100
-    mortality_rate = (total_deaths / data['population'].iloc[-1]) * 100000  # per 100,000 people
-    
-    indicator_info = f"Case Fatality Rate: {case_fatality_rate:.2f}%\n" \
-                     f"Recovery Rate: {recovery_rate:.2f}%\n" \
-                     f"Mortality Rate: {mortality_rate:.2f} per 100,000 people"
-    
-    label_indicators.config(text=indicator_info)
+def pie_1(df):
+    tot_reinf = df.iloc[-1, 29]
+    tot_vacc = df.iloc[-1, 27]
+    tot_unkn = df.iloc[-1, 26]
 
-# Δημιουργία κουμπιών για εμφάνιση δεδομένων
-btn_daily = ttk.Button(frame1, text="Ημερήσια Επισκόπηση", command=show_daily_overview)
-btn_daily.pack(padx=10, pady=10)
+    naming = 'Συνολικές Επαναμολύνσεις', 'Συνολικοί Εμβολιασμοί', 'Συνολικά Αγνωστα Κρούσματα'
+    plt.pie([tot_reinf, tot_vacc, tot_unkn], labels=naming, autopct    = '%1.1f%%')
+    plt.title("Ποσοστά Συνολικών Επαναμολύνσεων, Εμβολιασμών και Άγνωστων Κρουσμάτων")
+    plt.show()
 
-btn_total = ttk.Button(frame2, text="Συνολική Επισκόπηση", command=show_total_overview)
-btn_total.pack(padx=10, pady=10)
+def pie_2(df):
+    naming = 'Εμβολιασμένοι', 'Ανεμβολίαστοι', 'Συνολικοί'
+    x = df['total_vaccinated_crit'].sum()
+    y = df['total_unvaccinated_crit'].sum()
+    z = df['total_critical'].sum()
+    plt.pie([x, y, z], labels=naming, autopct='%1.1f%%')
+    plt.title("Συνολικά Ποσοστά Ανθρώπων Σε Κρίσιμη Κατάσταση")
+    plt.show()
 
-btn_vaccination = ttk.Button(frame3, text="Εξέλιξη Εμβολιασμών", command=show_vaccination_overview)
-btn_vaccination.pack(padx=10, pady=10)
 
-btn_antibody = ttk.Button(frame4, text="Έλεγχοι Αντισωμάτων", command=show_antibody_tests_overview)
-btn_antibody.pack(padx=10, pady=10)
+def hospitalized(df):
+    hospital = df.loc[df['hospitalized'] > 0]
+    hospital_date = hospital.iloc[:, 0]
+    hospitalized = hospital.iloc[:, 16]
 
-btn_indicators = ttk.Button(frame5, text="Επιδημιολογικοί Δείκτες", command=show_epidemiological_indicators)
-btn_indicators.pack(padx=10, pady=10)
+    plt.bar(hospital_date, hospitalized, label="Νοσηλευόμενοι", width=1)
 
-# Δημιουργία labels για εμφάνιση πληροφοριών
-label_daily = ttk.Label(frame1, text="")
-label_daily.pack(padx=10, pady=10)
+    plt.title("Κάρτα Νοσηλευόμενων")
+    plt.xlabel("Ημερομηνίες")
+    plt.ylabel("Αριθμός Νοσηλευόμενων")
+    plt.xticks(hospital_date[::100])
+    plt.show()
 
-label_total = ttk.Label(frame2, text="")
-label_total.pack(padx=10, pady=10)
 
-label_indicators = ttk.Label(frame5, text="")
-label_indicators.pack(padx=10, pady=10)
-
-root.mainloop()
+if __name__ == "__main__":
+    main()
+    print("Τέλος Προγράμματος!")
