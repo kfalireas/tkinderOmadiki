@@ -19,7 +19,7 @@ def main():
 def create_gui(df):
     root = tk.Tk()
     root.title("Covid-19 Greece Data Analysis")
-    root.geometry("800x600")
+    root.geometry("800x800") #Μεγαλωσα το dimension του αρχικου παραθυρου για να φαινεται και η φωτογραφια
     root.configure(bg="#dfe3ee")  # Ανοιχτό γκρι-μπλε φόντο, μπορούμε απο οποιαδήποτε παλέτα να πάρουμε χρώματα και να αλλάξουμε το γκρι αμα θέλετε αλλα ειναι το πιο ευδιακρίτο χρώμα απο αυτά που δοκίμασα
 
     style = ttk.Style()
@@ -29,7 +29,7 @@ def create_gui(df):
 
     # Εδω μπορούμε να προσθέσουμε μια εικόνα αμα θέλουμε, θα κάνει λίγο πιο ωραίο το αρχικό παράθυρο
     try:
-        logo = tk.PhotoImage(file="logo.png")  
+        logo = tk.PhotoImage(file="covid-19.png")
         logo_label = ttk.Label(root, image=logo)
         logo_label.pack(pady=10)
     except:
