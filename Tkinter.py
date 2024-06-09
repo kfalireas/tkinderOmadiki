@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import warnings
 import tkinter as tk
 from tkinter import ttk, scrolledtext
+import matplotlib.dates as mdates
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -99,79 +100,104 @@ def compare_dates(df):
     text_area.insert(tk.INSERT, pct3.transpose().to_string())
 
 def cases_deaths(df):
-    fig, (ax1, ax2) = plt.subplots(nrows=2,ncols=1)                         #Δημιουργώ καρτέλα με 2 subplots
-    ax1.plot(df.date,df.confirmed,label="Επιβεβαιωμένα Κρούσματα")
-    ax2.plot(df.date,df.total_deaths,'g--',label="Συνολικές Απώλειες")
+    df.date = pd.to_datetime(df.date)                                                                      # Μετατρέπω το date Σε datetime Αντικείμενο για να Διαχειριστώ τον Χρόνο 
+    month_df = df.resample('M', on='date').sum()                                                           # Το df θα Διαμορφωθεί σε Αθροίσματα Μηνών
 
-    ax1.set_title("Επιβεβαιωμένα Κρούσματα")
-    ax1.set_xlabel('Ημερομηνίες (Ανα εξάμηνα)')
-    ax1.set_ylabel("Κρούσματα")
-    plt.sca(ax1)                                                            # Θέτω άξονα ax1
-    plt.xticks(df.date[::182])                                              #Ο άξωνας χ (ημερομηνίες) θα είναι ανα εξάμηνα
+    fig, ax = plt.subplots(nrows=3, ncols=1, sharex=True)
+    fig.suptitle('Καρτέλα Κρουσματα')
+    ax[0].plot(month_df.index, month_df.confirmed, 'b--^', label='Επιβεβαιομένα Κρούσματα')                 # 3 plots σε 3 Οριζόντιους Άξονες
+    ax[1].plot(month_df.index, month_df.new_cases, 'r-o', label='Νέα Κρούσματα')
+    ax[2].plot(month_df.index, month_df.total_deaths, 'g-s', label='Συνολικές Απώλειες')
 
-    ax2.set_title("Συνολικές Απώλειες")
-    ax2.set_xlabel('Ημερομηνίες (Ανα εξάμηνα)')
-    ax2.set_ylabel("Απώλειες")
-    plt.ticklabel_format(axis="y", style='plain')                           #Αφαίρεση scientific notation
-    plt.sca(ax2)                                                            # Θέτω άξονα ax2
-    plt.xticks(df.date[::182])
+    ax[0].set_title("Επιβεβαιομένα Κρούσματα")                                                              # Τίτλοι
+    ax[0].set_ylabel('Κρούσματα')
 
-    ax1.legend()
-    ax2.legend()
+    ax[1].set_title('Νέα Κρούσματα')                                              
+    ax[1].set_xlabel('Ημερομηνίες')
+    ax[1].set_ylabel('Αριθμός Θανάτων')
+    ax[2].set_title("Συνολικός Αριθμός Θανάτων")
+    ax[2].set_ylabel('Θάνατοι')
+
+    ax[1].xaxis.set_major_formatter(mdates.DateFormatter("%B %Y"))                                          # Διαμόρφωση ημερομηνιών (Μήνας-Χρόνος)
+    plt.xticks(rotation=90)
+
+    ax[0].legend()
+    ax[1].legend(loc='upper left')
+    ax[2].legend()
+    ax[0].ticklabel_format(axis="y", style='plain')                                                         # Αφαίρεση scientific notation
+    ax[2].ticklabel_format(axis="y", style='plain')                                                         # Αφαίρεση scientific notation
     plt.tight_layout()
     plt.show()
 
 def vaccinations_and_actives(df):
-    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1)                                   # δύο διαγράματα σε δύο οριζόντιους άξονες
+    fig, ax = plt.subplots(nrows=3, ncols=1, sharex=True)
+    fig.suptitle('Καρτέλα Συνολικής Εξέλιξης Κρουσμάτων,Θανάτων,Εμβολιασμών')
 
-    ax1.plot(df.date, df.total_vaccinations, label="Αριθμός εμβολιασμών")              # πρώτο διάγραμμα εμβολιασμών
-    ax2.plot(df.date, df.active,'r--', label="Ενεργά Κρούσματα")                       # δεύτερο διάγραμμα ενεργών 
+    ax[0].plot(df.date, df.confirmed, 'm-', label="Κρούσματα")
+    ax[1].plot(df.date, df.total_deaths, 'r--', label="Θάνατοι")
+    ax[2].plot(df.date, df.total_vaccinations, 'c.', label="Εμβολιασμοί")
 
+    ax[0].set_title("Συνολικά Κρούσματα")
+    ax[1].set_title("Συνολικές Απώλειες")
+    ax[2].set_title("Συνολικοί Εμβολιασμοί")
+    ax[0].ticklabel_format(axis="y", style='plain')
+    ax[2].ticklabel_format(axis="y", style='plain')
 
-    ax1.set_title("Συνολικοί εμβολιασμοί")                                              # Ονομασία και τίτλοι αξόνων
-    ax1.set_xlabel('Ημερομηνίες (Ανα εξάμηνα)')
-    ax1.set_ylabel("Εμβολιασμοί")
-    plt.sca(ax1)                                                                         # Θέτω άξονα ax1
-    plt.ticklabel_format(axis="y", style='plain')                                        #Αφαίρεση scientific notation
-    plt.xticks(df.date[::182])                                                           #Ημερομηνίες ανα εξάμηνα
+    plt.xticks(df.date[::120])                                                                             # Ημερομηνίες Ανα Τετράμηνα
+    plt.xticks(df.date[::120])
+    plt.xticks(df.date[::120])
 
+    ax[2].set_xlabel('Ημερομηνίες (Ανα Τετράμηνο)')                                                        # Τίτλοι στους Άξονες
+    ax[0].set_ylabel("Αριθμός Κρουσμάτων")
+    ax[1].set_ylabel("Αριθμός Θανάτων")
+    ax[2].set_ylabel("Αριθμός Εμβολιασμών")
 
-    ax2.set_title("Συνολική Εξέλιξη Ενεργών Κρουσμάτων")                                 # Tίτλοι
-    ax2.set_xlabel('Ημερομηνίες (Ανα εξάμηνα)')
-    ax2.set_ylabel("Αριθμός Ενεργών Κρουσμάτων")
-    plt.sca(ax2)                                                                         # Θέτω άξονα ax2
-    plt.xticks(df.date[::182])
-
-    ax1.legend()
-    ax2.legend(loc='upper left')
+    ax[0].legend()
+    ax[1].legend(loc='upper left')
+    ax[2].legend(loc='upper left')
+    
     plt.tight_layout()
     plt.show()
 
 def pie_1(df):
-    fig, axes = plt.subplots(nrows=2,ncols=1, figsize=(8,7))                                             # 2 pie charts σε 2 οριζόντιους άξονες και έναν κάθετο
+    fig, axes = plt.subplots(nrows=2,ncols=2, figsize=(8,7))                                          # 2 pie charts σε 2 οριζόντιους άξονες και έναν κάθετο
+    fig.suptitle('Καρτέλα Ποσοστών')
 
-    tot_reinf =  df.iloc[-1,29]                                                                          # Eπαναμολύνσεις της τελευταίας Μέρας
-    tot_vacc = df.iloc[-1,27]                                                                            # εμβολιασμοί της τελευταίας Μερας
-    tot_unkn = df.iloc[-1,26]                                                                            # αγνωστα κρούσματα της τελευταίας Μέρας
+    tot_reinf =  df.iloc[-1,29]                                                                         #Eπαναμολύνσεις
+    tot_vacc = df.iloc[-1,27]                                                                            # εμβολιασμοί
+    confirmed = df.iloc[-1,2]                                                                         # επιβεβαιομενα
 
     Colors_1 = ['forestgreen','darkviolet','yellow']
-    naming = 'Συνολικές Επαναμολύνσεις','Συνολικοί Εμβολιασμοί','Συνολικά Αγνωστα Κρούσματα'
-    axes[0].pie([tot_reinf,tot_vacc,tot_unkn],labels=naming,colors=Colors_1,autopct='%1.1f%%')          # πρώτο pie chart
-    axes[0].set_title("Ποσοστό Συνολικών Επαναμολύνσεων,Εμβολιασμών και Άγνωστων Κρουσμάτων")
+    naming = 'Επαναμολύνσεις','Εμβολιασμοί','Επιβεβαιομένα Κρούσματα'
+    axes[0,0].pie([tot_reinf,tot_vacc,confirmed],labels=naming,colors=Colors_1,autopct='%1.1f%%')         # πρώτο pie chart
+    axes[0,0].set_title("Ποσοστό Επαναμολύνσεων,Εμβολιασμών και Άγνωστων Κρουσμάτων")
 
     Colors_2 = ['cyan','darkolivegreen','orangered']
     naming_2 = 'Εμβολιασμένοι', 'Ανεμβολίαστοι', 'Συνολικός Αριθμός'
-    x = df['total_vaccinated_crit'].sum()                                                              #Αθροισμα Εμβολιασμένων Σε Κρίσιμη Κατάσταση
-    y = df['total_unvaccinated_crit'].sum()                                                            #Αθροισμα Ανεμβολίαστων Σε Κρίσιμη Κατάσταση
-    z = df['total_critical'].sum()                                                                     # Συνολικός Αριθμός Ανθρώπων Σε Κρίσιμη Κατάσταση
-    axes[1].pie([x, y, z], labels=naming_2,colors=Colors_2, autopct='%1.1f%%')                         # δεύτερο pie chart
-    axes[1].set_title("Συνολικό Ποσοστό Ανθρώπων Σε Κρίσιμη Κατάσταση")
+    x = df['total_vaccinated_crit'].sum()                                                                 #Αθροισμα Εμβολιασμένων Σε Κρίσιμη Κατάσταση
+    y = df['total_unvaccinated_crit'].sum()                                                               #Αθροισμα Ανεμβολίαστων Σε Κρίσιμη Κατάσταση
+    z = df['total_critical'].sum()                                                                        # Συνολικός Αριθμός Σε Κρίσιμη Κατάσταση
+    axes[0,1].pie([x, y, z], labels=naming_2,colors=Colors_2, autopct='%1.1f%%')                          # Δεύτερο pie 
+    axes[0,1].set_title("Συνολικό Ποσοστό Ανθρώπων Σε Κρίσιμη Κατάσταση")
+
+    domestic = df.iloc[-1,25]                                                                              # Εγχώρια Κρούσματα
+    foreign = df.iloc[-1,24]                                                                               # Ξένα 
+    naming_3 = 'Εγχώρια','Ξένα'
+    Colors_3 = ['lightblue','red']
+    axes[1,0].pie([domestic,foreign],labels=naming_3,colors=Colors_3,autopct='%1.1f%%')                    # Τρίτο pie
+    axes[1,0].set_title('Ποσοστό Εγχωρίων και Ξένων Κρουσμάτων')
+
+    cases = df.iloc[-1,2]                                                                                  # Επιβεβαιομένα Κρούσματα
+    uknown = df.iloc[-1,26]                                                                                # Αγνωστα Κρούσματα
+    naming_4 = 'Επιβεβαιομένα','Άγνωστα'
+    Colors_4 = ['crimson','turquoise']
+    axes[1, 1].pie([cases, uknown], labels=naming_4,colors=Colors_4,autopct='%1.1f%%')                      # Τέταρτο pie
+    axes[1,1].set_title('Ποσοστό Επιβεβαιομένων και Αγνώστων Κρουσμάτων')
 
     plt.tight_layout()
     plt.show()
 
 def icu(df):
-
     fig, ax = plt.subplots(nrows=3,ncols=1, sharex=True)                                          # plots σε 3 οριζόντιους άξονες και έναν κάθετο άξονα x να μοιράζεται
     fig.suptitle('Καρτέλα ΜΕΘ')                                                                   # τίτλος καρτέλας
 
@@ -186,21 +212,26 @@ def icu(df):
 
     ax[0].legend()
     ax[1].legend()
-    ax[2].legend()
+    ax[2].legend(loc='upper right')
     plt.tight_layout()
     plt.show()
-
 def hospitalized(df):
-    hospital = df.loc[df['hospitalized']>0]          # Κάνω slice για να βρώ απομονώσω το dataframe που έχει μηδέν νοσηλείες
-    hospital_date = hospital.iloc[:,0]               # Hμερομηνίες στο συγκεκριμένο frame
-    hospitalized = hospital.iloc[:,16]               # Nοσηλείες
+    df.date = pd.to_datetime(df.date)                                                                   # Μετατρέπω το date Σε datetime Αντικείμενο για να Διαχειριστώ τον Χρόνο 
+    new_df = df.resample('M', on='date').sum()
 
-    plt.bar(hospital_date,hospitalized,label="Νοσηλευόμενοι",width=1)
+    hospital = new_df.loc[
+    new_df['hospitalized'] > 0]                                                                          # Κάνω slice για να Απομονώσω το dataframe που έχει μη Αρνητικό Αριθμό Νοσηλευόμενων
+    hospitalized = hospital.iloc[:, 16]
+
+    fig, ax = plt.subplots()
+    ax.bar(hospital.index, hospitalized, label="Νοσηλευόμενοι", width=25)
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%B %Y"))
+    ax.autoscale(enable=True, axis='x', tight=True)
+    plt.xticks(rotation=90)
 
     plt.title("Κάρτα Νοσηλευόμενων")
     plt.xlabel("Ημερομηνίες")
     plt.ylabel("Αριθμός Νοσηλευόμενων")
-    plt.xticks(hospital_date[::100])
     plt.show()
 
 
