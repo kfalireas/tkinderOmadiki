@@ -87,8 +87,8 @@ def create_gui(df):
     ttk.Button(vis_frame, text="Case Fatality Rate", command=lambda: Case_fatality_rate(cdf)).pack(pady=5, fill=tk.X)
     ttk.Button(vis_frame, text="Recovery Rate", command=lambda: Recovery_rate(cdf)).pack(pady=5, fill=tk.X)
     ttk.Button(vis_frame, text="Survivors and Deaths", command=lambda: Epizisantes_thanontes(cdf)).pack(pady=5, fill=tk.X)
-    ttk.Button(vis_frame, text="Annual New Deaths", command=lambda: neoi_thanatoi(cdf)).pack(pady=5, fill=tk.X)
-    ttk.Button(vis_frame, text="Annual New Cases", command=lambda: Nees_molynseis(cdf)).pack(pady=5, fill=tk.X)
+    ttk.Button(vis_frame, text="Annual New Deaths", command=lambda: neoi_thanatoi(ethsio_df)).pack(pady=5, fill=tk.X)
+    ttk.Button(vis_frame, text="Annual New Cases", command=lambda: Nees_molynseis(ethsio_df)).pack(pady=5, fill=tk.X)
 
     root.mainloop()
 
