@@ -104,19 +104,19 @@ def cases_deaths(df):
     month_df = df.resample('M', on='date').sum()                                                           # Το df θα Διαμορφωθεί σε Αθροίσματα Μηνών
 
     fig, ax = plt.subplots(nrows=3, ncols=1, sharex=True)
-    fig.suptitle('Καρτέλα Κρουσματα')
+    fig.suptitle('Καρτέλα Κρουσμάτων και Απωλειών')
     ax[0].plot(month_df.index, month_df.confirmed, 'b--^', label='Επιβεβαιομένα Κρούσματα')                 # 3 plots σε 3 Οριζόντιους Άξονες
     ax[1].plot(month_df.index, month_df.new_cases, 'r-o', label='Νέα Κρούσματα')
     ax[2].plot(month_df.index, month_df.total_deaths, 'g-s', label='Συνολικές Απώλειες')
 
     ax[0].set_title("Επιβεβαιομένα Κρούσματα")                                                              # Τίτλοι
-    ax[0].set_ylabel('Κρούσματα')
+    ax[0].set_ylabel('Αριθμός Κρουσμάτων')
 
     ax[1].set_title('Νέα Κρούσματα')                                              
     ax[1].set_xlabel('Ημερομηνίες')
-    ax[1].set_ylabel('Αριθμός Θανάτων')
+    ax[1].set_ylabel('Αριθμός Κρουσμάτων')
     ax[2].set_title("Συνολικός Αριθμός Θανάτων")
-    ax[2].set_ylabel('Θάνατοι')
+    ax[2].set_ylabel('Αριθμός Θανάτων')
 
     ax[1].xaxis.set_major_formatter(mdates.DateFormatter("%B %Y"))                                          # Διαμόρφωση ημερομηνιών (Μήνας-Χρόνος)
     plt.xticks(rotation=90)
@@ -131,16 +131,16 @@ def cases_deaths(df):
 
 def vaccinations_and_actives(df):
     fig, ax = plt.subplots(nrows=3, ncols=1, sharex=True)                                                # 3 plots σε 3 Άξονες
-    fig.suptitle('Καρτέλα Συνολικής Εξέλιξης Κρουσμάτων,Εμβολιασμών') 
+    fig.suptitle('Καρτέλα Συνολικής Εξέλιξης Επαναμολύνσεων,Ενεργών Κρουσμάτων και Εμβολιασμών')
 
-    ax[0].plot(df.date, df.confirmed, 'm-', label="Κρούσματα")                                           # plot για Επιβεβαιομένα Κρούσματα
+    ax[0].plot(df.date, df.total_reinfections, 'm-', label="Επαναμολύνσεις")                             # plot για Επαναμολύνσεις
     ax[1].plot(df.date, df.active, 'r--', label="Ενεργά")                                                # plot για Ενεργά Κρούσματα
     ax[2].plot(df.date, df.total_vaccinations, 'c.', label="Εμβολιασμοί")                                # plot για Εμβολιασμούς
 
-    ax[0].set_title("Επιβεβαιομένα Κρούσματα")
+    ax[0].set_title("Επαναμολύνσεις")
     ax[1].set_title("Ενεργά Κρούσματα")
     ax[2].set_title("Συνολικοί Εμβολιασμοί")
-    ax[0].ticklabel_format(axis="y", style='plain')
+    ax[0].ticklabel_format(axis="y", style='plain')                                                       # Αφαίρεση scientific notation σε 1ο,3ο Άξονα
     ax[2].ticklabel_format(axis="y", style='plain')
 
     plt.xticks(df.date[::120])                                                                             # Ημερομηνίες Ανα Τετράμηνα
@@ -148,7 +148,7 @@ def vaccinations_and_actives(df):
     plt.xticks(df.date[::120])
 
     ax[2].set_xlabel('Ημερομηνίες (Ανα Τετράμηνα)')                                                        # Τίτλοι στους Άξονες
-    ax[0].set_ylabel("Αριθμός Κρουσμάτων")
+    ax[0].set_ylabel("Αριθμός Επαναμολύνσεων")
     ax[1].set_ylabel("Αριθμός Κρουσμάτων")
     ax[2].set_ylabel("Αριθμός Εμβολιασμών")
 
