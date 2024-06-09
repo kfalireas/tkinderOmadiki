@@ -130,15 +130,15 @@ def cases_deaths(df):
     plt.show()
 
 def vaccinations_and_actives(df):
-    fig, ax = plt.subplots(nrows=3, ncols=1, sharex=True)
-    fig.suptitle('Καρτέλα Συνολικής Εξέλιξης Κρουσμάτων,Θανάτων,Εμβολιασμών')
+    fig, ax = plt.subplots(nrows=3, ncols=1, sharex=True)                                                # 3 plots σε 3 Άξονες
+    fig.suptitle('Καρτέλα Συνολικής Εξέλιξης Κρουσμάτων,Εμβολιασμών') 
 
-    ax[0].plot(df.date, df.confirmed, 'm-', label="Κρούσματα")
-    ax[1].plot(df.date, df.total_deaths, 'r--', label="Θάνατοι")
-    ax[2].plot(df.date, df.total_vaccinations, 'c.', label="Εμβολιασμοί")
+    ax[0].plot(df.date, df.confirmed, 'm-', label="Κρούσματα")                                           # plot για Επιβεβαιομένα Κρούσματα
+    ax[1].plot(df.date, df.active, 'r--', label="Ενεργά")                                                # plot για Ενεργά Κρούσματα
+    ax[2].plot(df.date, df.total_vaccinations, 'c.', label="Εμβολιασμοί")                                # plot για Εμβολιασμούς
 
-    ax[0].set_title("Συνολικά Κρούσματα")
-    ax[1].set_title("Συνολικές Απώλειες")
+    ax[0].set_title("Επιβεβαιομένα Κρούσματα")
+    ax[1].set_title("Ενεργά Κρούσματα")
     ax[2].set_title("Συνολικοί Εμβολιασμοί")
     ax[0].ticklabel_format(axis="y", style='plain')
     ax[2].ticklabel_format(axis="y", style='plain')
@@ -147,9 +147,9 @@ def vaccinations_and_actives(df):
     plt.xticks(df.date[::120])
     plt.xticks(df.date[::120])
 
-    ax[2].set_xlabel('Ημερομηνίες (Ανα Τετράμηνο)')                                                        # Τίτλοι στους Άξονες
+    ax[2].set_xlabel('Ημερομηνίες (Ανα Τετράμηνα)')                                                        # Τίτλοι στους Άξονες
     ax[0].set_ylabel("Αριθμός Κρουσμάτων")
-    ax[1].set_ylabel("Αριθμός Θανάτων")
+    ax[1].set_ylabel("Αριθμός Κρουσμάτων")
     ax[2].set_ylabel("Αριθμός Εμβολιασμών")
 
     ax[0].legend()
@@ -160,12 +160,12 @@ def vaccinations_and_actives(df):
     plt.show()
 
 def pie_1(df):
-    fig, axes = plt.subplots(nrows=2,ncols=2, figsize=(8,7))                                          # 2 pie charts σε 2 οριζόντιους άξονες και έναν κάθετο
+    fig, axes = plt.subplots(nrows=2,ncols=2, figsize=(8,7))                                              # 4 pie charts σε 2 Οριζόντιους Άξονες και 2 Κάθετους
     fig.suptitle('Καρτέλα Ποσοστών')
 
-    tot_reinf =  df.iloc[-1,29]                                                                         #Eπαναμολύνσεις
-    tot_vacc = df.iloc[-1,27]                                                                            # εμβολιασμοί
-    confirmed = df.iloc[-1,2]                                                                         # επιβεβαιομενα
+    tot_reinf =  df.iloc[-1,29]                                                                           #Eπαναμολύνσεις
+    tot_vacc = df.iloc[-1,27]                                                                             # Eμβολιασμοί
+    confirmed = df.iloc[-1,2]                                                                             # Eπιβεβαιομενα
 
     Colors_1 = ['forestgreen','darkviolet','yellow']
     naming = 'Επαναμολύνσεις','Εμβολιασμοί','Επιβεβαιομένα Κρούσματα'
@@ -198,17 +198,18 @@ def pie_1(df):
     plt.show()
 
 def icu(df):
-    fig, ax = plt.subplots(nrows=3,ncols=1, sharex=True)                                          # plots σε 3 οριζόντιους άξονες και έναν κάθετο άξονα x να μοιράζεται
-    fig.suptitle('Καρτέλα ΜΕΘ')                                                                   # τίτλος καρτέλας
+    fig, ax = plt.subplots(nrows=3,ncols=1, sharex=True)                                                    # plots σε 3 οριζόντιους άξονες και έναν κάθετο άξονα x να μοιράζεται
+    fig.suptitle('Καρτέλα ΜΕΘ')                                                                             # τίτλος καρτέλας
 
-    ax[0].plot(df.date,df.icu_percent,label='Ποσοστό ΜΕΘ',color='r')                              # πρώτο chart για ποσοστό μεθ
-    ax[1].plot(df.date,df.beds_percent,label='Ποσοστό Κρεβατιών',color='b')                       # δεύτερο chart για κρεβάτια μεθ
-    ax[2].plot(df.date,df.icu_out,label='Εκτώς ΜΕΘ',color='g')                                    # τρίτο για όσους βγηκαν απο μεθ
+    ax[0].plot(df.date,df.icu_percent,label='Ποσοστό ΜΕΘ',color='r')                                        # πρώτο chart για ποσοστό μεθ
+    ax[1].plot(df.date,df.beds_percent,label='Ποσοστό Κρεβατιών',color='b')                                 # δεύτερο chart για κρεβάτια μεθ
+    ax[2].plot(df.date,df.icu_out,label='Εκτώς ΜΕΘ',color='g')                                              # τρίτο για όσους βγηκαν απο μεθ
 
-    ax[0].set_title('Νοσηλευόμενοι σε ΜΕΘ')                                                        # οι τρείς τίτλοι 
+    ax[0].set_title('Νοσηλευόμενοι σε ΜΕΘ')                                                                 # οι τρείς τίτλοι 
     ax[1].set_title('Κρεβάτια ΜΕΘ')
     ax[2].set_title('Νοσηλευόμενοι Εκτώς ΜΕΘ')
-    plt.xticks(df.date[::182])                                                                     # Οι ημερομηνίες είναι ανα εξάμηνα
+    ax[2].set_xlabel('Ημερομηνίες (ανά Τετράμηνα)')
+    plt.xticks(df.date[::120])                                                                               # Οι Ημερομηνίες είναι ανά Τετράμηνα
 
     ax[0].legend()
     ax[1].legend()
@@ -217,7 +218,7 @@ def icu(df):
     plt.show()
 def hospitalized(df):
     df.date = pd.to_datetime(df.date)                                                                   # Μετατρέπω το date Σε datetime Αντικείμενο για να Διαχειριστώ τον Χρόνο 
-    new_df = df.resample('M', on='date').sum()
+    new_df = df.resample('M', on='date').mean()                                                         # Διαμορφώνω σε Μήνες και Βρίσκω Μέσους Όρους
 
     hospital = new_df.loc[
     new_df['hospitalized'] > 0]                                                                          # Κάνω slice για να Απομονώσω το dataframe που έχει μη Αρνητικό Αριθμό Νοσηλευόμενων
@@ -229,7 +230,7 @@ def hospitalized(df):
     ax.autoscale(enable=True, axis='x', tight=True)
     plt.xticks(rotation=90)
 
-    plt.title("Κάρτα Νοσηλευόμενων")
+    plt.title("Κάρτα Μέσου Όρου Νοσηλευόμενων")
     plt.xlabel("Ημερομηνίες")
     plt.ylabel("Αριθμός Νοσηλευόμενων")
     plt.show()
