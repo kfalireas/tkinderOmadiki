@@ -286,8 +286,6 @@ def new_ag_tests(cdf):
     #Hmerisia_ag=cdf['new_ag_tests'].iloc[-1]
     #print(Hmerisia_ag)
 
-    new_ag_tests()
-
 # Ρυμθμός μεταβολής νέων κρουσμάτων
 cdf['new_cases_rythmos_metavolis'] = cdf['new_cases'].pct_change() * 100
 # Συνολική εξέλιξη των ελέγχων αντισωμάτων
@@ -301,9 +299,6 @@ def ag_tests(cdf):
     Synolika_ag=cdf['ag_tests'].iloc[-1]
     print(Synolika_ag)
 
-    ag_tests()
-
-
 
 # Ρυθμός μεταβολής νέων θανάτων
 cdf['new_deaths_rythmos_metavolis'] = cdf['new_deaths'].pct_change() * 100
@@ -316,10 +311,6 @@ def new_cases_rythmos_metavolis(cdf):
     plt.ylabel("Ρυθμός νέων κρουσμάτων")
     plt.show()
 
-    new_cases_rythmos_metavolis()
-
-
-
 def new_deaths_rythmos_metavolis(cdf):
     cdf.plot(x="date",y="new_deaths_rythmos_metavolis")
     plt.title("Ρυμθμός μεταβολής νέων θανάτων")
@@ -327,9 +318,7 @@ def new_deaths_rythmos_metavolis(cdf):
     plt.ylabel("Ρυθμός νέων θανάτων")
     plt.show()
 
-    new_deaths_rythmos_metavolis()
-
-    # Ρυθμός μεταβολής συνολικών εμβολιασμών
+ # Ρυθμός μεταβολής συνολικών εμβολιασμών
 cdf['total_vaccinations_rythmos_metavolis'] = cdf['total_vaccinations'].pct_change() * 100
 
 
@@ -339,8 +328,6 @@ def total_vaccinations_rythmos_metavolis(cdf):
     plt.xlabel("Ημερομηνία")
     plt.ylabel("Ρυθμός συνολικών εμβολιασμών")
     plt.show()
-
-    total_vaccinations_rythmos_metavolis()
 
 # Ρυθμός μεταβολής συνολικών τεστ
 cdf['total_tests_rythmos_metavolis'] = cdf['total_tests'].pct_change() * 100
@@ -354,12 +341,8 @@ def total_tests_rythmos_metavolis(cdf):
     plt.xlabel("Ημερομηνία")
     plt.ylabel("Ρυθμός συνολικών τεστ")
     plt.show()
-
-    total_tests_rythmos_metavolis()
-
-    # Case fatality rate
-
-
+  
+# Case fatality rate
 
 def Case_fatality_rate(cdf):
 
@@ -369,10 +352,7 @@ def Case_fatality_rate(cdf):
     plt.ylabel("Θνητότητα")
     plt.show()
 
-    Case_fatality_rate()
-
-    # Recovery rate
-
+# Recovery rate
 cdf['Recovery_rate'] = cdf['recovered'] / cdf['confirmed'] * 100
 
 def Recovery_rate(cdf):
@@ -381,9 +361,6 @@ def Recovery_rate(cdf):
     plt.xlabel("Ημερομηνία")
     plt.ylabel("Δείκτης επιβίωσης")
     plt.show()
-
-    Recovery_rate()
-
 
 # Επιζήσαντες και θανόντες από το σύνολο του πλυθησμού στην Ελλάδα με Pie
 def Epizisantes_thanontes(cdf):
@@ -395,8 +372,6 @@ def Epizisantes_thanontes(cdf):
     plt.pie(slices,labels=labels,autopct='%1.1f%%',explode=explode)
     plt.title('Επιζήσαντες και θανόντες από τον κορωνοιό στην Ελλάδα')
     plt.show()
-
-    Epizisantes_thanontes()
 
 # Δημιουργούμε ένα column με τα χρόνια
 cdf['year'] = cdf['date'].dt.year
@@ -415,8 +390,8 @@ def neoi_thanatoi(ethsio_df):
     plt.title('Νεόι θάνατοι ανά έτος')
     plt.legend()
     plt.show()
-    neoi_thanatoi()
-    # Bar chart για νέες μολύνσεις
+    
+# Bar chart για νέες μολύνσεις
 
 def Nees_molynseis(ethsio_df):
     plt.bar(ethsio_df.index, ethsio_df['new_cases'], width=0.4, color='red', label='New Cases')
@@ -426,7 +401,6 @@ def Nees_molynseis(ethsio_df):
     plt.title('Νέες μολύνσεις ανά έτος')
     plt.legend()
     plt.show()
-    Nees_molynseis()
 
 if __name__ == "__main__":
     main()
