@@ -92,66 +92,6 @@ def create_gui(df):
 
     root.mainloop()
 
-def compare_dates(df):
-    print("Καρτέλα Ημερήσιας Επισκόπησης: (Προηγούμενη Μέρα-Τωρινή Μέρα-Ποσοστιαία Διαφορά)")
-    copied_df = df.copy(deep=True)
-    copied_df.rename(columns={'date':'Ημερομηνία','new_cases':'Νέα Κρούσματα','confirmed':'Επιβεβαιομένα Κρούσματα','new_deaths':'Νέες Απώλειες','total_deaths':'Συνολικές Απώλειες',
-                       'new_tests':'Νέα Τέστ','positive_tests':"Θετικά Τέστ",'new_selftest':'Νέα Σελφτέστ','new_ag_tests':'Νέα Τέστ Αντισωμάτων',
-                       'ag_tests':'Τέστ Αντισωμάτων','total_tests':'Συνολικά Τέστ','new_critical':'Νέοι Νοσηλευόμενοι Σε Κρίσιμη','total_vaccinated_crit':'Εμβολιασμένοι Σε Κρίσιμη',
-                       'total_unvaccinated_crit':'Μη Εμβολιασμένοι Σε Κρίσιμη','total_critical':'Συνολικός Αριθμός Νοσηλευόμενων Σε Κρίσιμη','hospitalized':'Σε Νοσηλεία','icu_percent':'Ποσοστό σε ΜΕΘ',
-                       'icu_out':'Εκτώς της ΜΕΘ','new_active':'Νέα Ενεργά Κρούσματα','active':'Ενεργά Κρούσματα','recovered':'Που Εχει Αναρρώσει','total_vaccinations':'Συνολικοί Εμβολιασμοί','reinfections':'Επαναμολύνσεις'},inplace=True)
-    copied_df = copied_df.drop(columns=['total_selftest','total_foreign','total_unknown','beds_percent','discharged','total_domestic','total_reinfections'])
-
-    col_start = copied_df.columns.get_loc('Νέα Κρούσματα')
-    col_end = copied_df.columns.get_loc('Επαναμολύνσεις')
-    df3 = copied_df.iloc[[-2,-1],col_start:col_end]
-    pct = df3.pct_change()
-    pct2 = pct.drop(pct.index[[0]])
-
-    pct3 = pd.concat([df3,pct2])
-    pct3.index = ['Προηγούμενη','Τωρινή','Διαφορά']
-    print(pct3.transpose())
-
-    # Δημιουργία νέου παραθύρου για εμφάνιση δεδομένων
-    data_window = tk.Toplevel()
-    data_window.title("Compare Dates")
-    data_window.geometry("600x400")
-    data_window.configure(bg="#f0f0f0")
-
-    text_area = scrolledtext.ScrolledText(data_window, wrap=tk.WORD, width=80, height=20)
-    text_area.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
-
-    text_area.insert(tk.INSERT, pct3.transpose().to_string())
-
-def cases_deaths(df):
-    df.date = pd.to_datetime(df.date)                                                                      # Μετατρέπω το date Σε datetime Αντικείμενο για να Διαχειριστώ τον Χρόνο 
-    month_df = df.resample('M', on='date').sum()                                                           # Το df θα Διαμορφωθεί σε Αθροίσματα Μηνών
-
-    fig, ax = plt.subplots(nrows=3, ncols=1, sharex=True)
-    fig.suptitle('Καρτέλα Κρουσμάτων και Απωλειών')
-    ax[0].plot(month_df.index, month_df.confirmed, 'b--^', label='Επιβεβαιομένα Κρούσματα')                 # 3 plots σε 3 Οριζόντιους Άξονες
-    ax[1].plot(month_df.index, month_df.new_cases, 'r-o', label='Νέα Κρούσματα')
-    ax[2].plot(month_df.index, month_df.total_deaths, 'g-s', label='Συνολικές Απώλειες')
-
-    ax[0].set_title("Επιβεβαιομένα Κρούσματα")                                                              # Τίτλοι
-    ax[0].set_ylabel('Αριθμός Κρουσμάτων')
-
-    ax[1].set_title('Νέα Κρούσματα')                                              
-    ax[1].set_xlabel('Ημερομηνίες')
-    ax[1].set_ylabel('Αριθμός Κρουσμάτων')
-    ax[2].set_title("Συνολικός Αριθμός Θανάτων")
-    ax[2].set_ylabel('Αριθμός Θανάτων')
-
-    ax[1].xaxis.set_major_formatter(mdates.DateFormatter("%B %Y"))                                          # Διαμόρφωση ημερομηνιών (Μήνας-Χρόνος)
-    plt.xticks(rotation=90)
-
-    ax[0].legend()
-    ax[1].legend(loc='upper left')
-    ax[2].legend()
-    ax[0].ticklabel_format(axis="y", style='plain')                                                         # Αφαίρεση scientific notation
-    ax[2].ticklabel_format(axis="y", style='plain')                                                         # Αφαίρεση scientific notation
-    plt.tight_layout()
-    plt.show()
 
 def compare_dates(df):
 
