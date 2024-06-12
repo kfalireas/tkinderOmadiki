@@ -350,13 +350,6 @@ def new_ag_tests(cdf):
 	plt.show()
 
 
-# Hmerisia_ag=cdf['new_ag_tests'].iloc[-1]
-# print(Hmerisia_ag)
-
-# Ρυμθμός μεταβολής νέων κρουσμάτων
-cdf['new_cases_rythmos_metavolis'] = cdf['new_cases'].pct_change() * 100
-
-
 # Συνολική εξέλιξη των ελέγχων αντισωμάτων
 def ag_tests(cdf):
 	cdf.plot(x="date", y="ag_tests")
@@ -365,13 +358,9 @@ def ag_tests(cdf):
 	plt.ylabel("Συνολικά τεστ")
 	plt.show()
 
-	Synolika_ag = cdf['ag_tests'].iloc[-1]
-	print(Synolika_ag)
-
-
-# Ρυθμός μεταβολής νέων θανάτων
-cdf['new_deaths_rythmos_metavolis'] = cdf['new_deaths'].pct_change() * 100
-
+	
+# Ρυμθμός μεταβολής νέων κρουσμάτων
+cdf['new_cases_rythmos_metavolis'] = cdf['new_cases'].pct_change() * 100
 
 def new_cases_rythmos_metavolis(cdf):
 	cdf.plot(x="date", y="new_cases_rythmos_metavolis")
@@ -380,6 +369,8 @@ def new_cases_rythmos_metavolis(cdf):
 	plt.ylabel("Ρυθμός νέων κρουσμάτων")
 	plt.show()
 
+# Ρυθμός μεταβολής νέων θανάτων
+cdf['new_deaths_rythmos_metavolis'] = cdf['new_deaths'].pct_change() * 100
 
 def new_deaths_rythmos_metavolis(cdf):
 	cdf.plot(x="date", y="new_deaths_rythmos_metavolis")
@@ -392,7 +383,6 @@ def new_deaths_rythmos_metavolis(cdf):
 # Ρυθμός μεταβολής συνολικών εμβολιασμών
 cdf['total_vaccinations_rythmos_metavolis'] = cdf['total_vaccinations'].pct_change() * 100
 
-
 def total_vaccinations_rythmos_metavolis(cdf):
 	cdf.plot(x="date", y="total_vaccinations_rythmos_metavolis")
 	plt.title("Ρυμθμός μεταβολής συνολικών εμβολιασμών")
@@ -404,9 +394,6 @@ def total_vaccinations_rythmos_metavolis(cdf):
 # Ρυθμός μεταβολής συνολικών τεστ
 cdf['total_tests_rythmos_metavolis'] = cdf['total_tests'].pct_change() * 100
 
-cdf['case_fatality_rate'] = cdf['total_deaths'] / cdf['confirmed'] * 100
-
-
 def total_tests_rythmos_metavolis(cdf):
 	cdf.plot(x="date", y="total_tests_rythmos_metavolis")
 	plt.title("Ρυμθμός μεταβολής συνολικών τεστ")
@@ -417,6 +404,8 @@ def total_tests_rythmos_metavolis(cdf):
 
 # Case fatality rate
 
+cdf['case_fatality_rate'] = cdf['total_deaths'] / cdf['confirmed'] * 100
+
 def Case_fatality_rate(cdf):
 	cdf.plot(x="date", y="case_fatality_rate")
 	plt.title("Θνητότητα")
@@ -426,6 +415,7 @@ def Case_fatality_rate(cdf):
 
 
 # Recovery rate
+
 cdf['Recovery_rate'] = cdf['recovered'] / cdf['confirmed'] * 100
 
 
