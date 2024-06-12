@@ -137,7 +137,7 @@ def create_gui(df):
 
 def compare_dates(df):
 	print("Καρτέλα Ημερήσιας Επισκόπησης: (Προηγούμενη Μέρα-Τωρινή Μέρα-Ποσοστιαία Διαφορά)")
-	copied_df = df.copy(deep=True)  # Δημιουργία Αντιγράφου και μετονομασία στήλεων
+	copied_df = df.copy(deep=True)                                                           # Δημιουργία Αντιγράφου και μετονομασία στήλεων
 	copied_df.rename(
 		columns={'date': 'Ημερομηνία', 'new_cases': 'Νέα Κρούσματα', 'confirmed': 'Επιβεβαιομένα Κρούσματα',
 		         'new_deaths': 'Νέες Απώλειες', 'total_deaths': 'Συνολικές Απώλειες',
@@ -154,17 +154,17 @@ def compare_dates(df):
 		         'reinfections': 'Επαναμολύνσεις'}, inplace=True)
 	copied_df = copied_df.drop(
 		columns=['total_selftest', 'total_foreign', 'total_unknown', 'beds_percent', 'discharged',
-		         'total_domestic', 'total_reinfections'])  # Αφαίρεση κάποιων δεδομένων
+		         'total_domestic', 'total_reinfections'])                                  # Αφαίρεση κάποιων δεδομένων
 
-	col_start = copied_df.columns.get_loc('Νέα Κρούσματα')  # Επιλέγω ποιες στήλες θα εμφανιστούν
+	col_start = copied_df.columns.get_loc('Νέα Κρούσματα')                                     # Επιλέγω ποιες στήλες θα εμφανιστούν
 	col_end = copied_df.columns.get_loc('Επαναμολύνσεις')
-	df3 = copied_df.iloc[[-2, -1], col_start:col_end]  # Επιλέγω 2 τελευταίες γραμμές (2 τελευταίες μέρες)
-	pct = df3.pct_change()  # Υπολογίζω ποσοστιαία διαφορά των δύο μερών
-	pct2 = pct.drop(pct.index[[0]])
+	refined_df = copied_df.iloc[[-2, -1], col_start:col_end]                                   # Επιλέγω 2 τελευταίες γραμμές (2 τελευταίες μέρες)
+	pct = refined_df.pct_change()                                                              # Υπολογίζω ποσοστιαία διαφορά των δύο μερών
+	second_df = pct.drop(pct.index[[0]])                                                       # pct.drop(index=[1540])
 
-	pct3 = pd.concat([df3, pct2])  # Ενώνω τις 2 καρτέλες,θα προβληθούν σε μορφή αναστρόφου πίνακα
-	pct3.index = ['Προηγούμενη', 'Τωρινή', 'Διαφορά']
-	print(pct3.transpose())
+	final_df = pd.concat([refined_df, second_df])                                              # Ενώνω τις 2 καρτέλες,θα προβληθούν σε μορφή αναστρόφου πίνακα
+	final_df.index = ['Προηγούμενη', 'Τωρινή', 'Διαφορά']
+	print(final_df.transpose())
 
 	# Δημιουργία νέου παραθύρου για εμφάνιση δεδομένων
 
@@ -176,7 +176,7 @@ def compare_dates(df):
 	text_area = scrolledtext.ScrolledText(data_window, wrap=tk.WORD, width=80, height=20)
 	text_area.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
-	text_area.insert(tk.INSERT, pct3.transpose().to_string())
+	text_area.insert(tk.INSERT, final_df.transpose().to_string())
 
 
 def cases_deaths(df):
@@ -243,10 +243,9 @@ def vaccinations_and_actives(df):
 
 
 def pie_1(df):
-	fig, axes = plt.subplots(nrows=2, ncols=2,
-	                         figsize=(8, 7))  # 4 pie charts σε 2 Οριζόντιους Άξονες και 2 Κάθετους
-	fig.suptitle('Καρτέλα Ποσοστών')
-
+	fig, axes = plt.subplots(nrows=2, ncols=2,figsize=(8, 7))  # 4 pie charts σε 2 Οριζόντιους Άξονες και 2 Κάθετους
+        fig.suptitle(f'Καρτέλα Επισκόπησης {datetime.datetime.now().date()}')
+	
 	tot_reinf = df.iloc[-1, 29]  # Eπαναμολύνσεις
 	tot_vacc = df.iloc[-1, 27]  # Eμβολιασμοί
 	confirmed = df.iloc[-1, 2]  # Eπιβεβαιομενα
@@ -284,19 +283,21 @@ def pie_1(df):
 
 
 def icu(df):
-	fig, ax = plt.subplots(nrows=3, ncols=1,
-	                       sharex=True)  # plots σε 3 οριζόντιους άξονες και έναν κάθετο άξονα x να μοιράζεται
-	fig.suptitle('Καρτέλα ΜΕΘ')  # τίτλος καρτέλας
+	fig, ax = plt.subplots(nrows=3, ncols=1,  sharex=True)                       # plots σε 3 οριζόντιους άξονες και έναν κάθετο άξονα x να μοιράζεται
+	fig.suptitle('Καρτέλα ΜΕΘ')                                                  # τίτλος καρτέλας
 
-	ax[0].plot(df.date, df.icu_percent, label='Ποσοστό ΜΕΘ', color='r')  # πρώτο chart για ποσοστό μεθ
-	ax[1].plot(df.date, df.beds_percent, label='Ποσοστό Κρεβατιών', color='b')  # δεύτερο chart για κρεβάτια μεθ
-	ax[2].plot(df.date, df.icu_out, label='Εκτώς ΜΕΘ', color='g')  # τρίτο για όσους βγηκαν απο μεθ
+	ax[0].plot(df.date, df.icu_percent, label='Ποσοστό ΜΕΘ', color='r')          # πρώτο chart για ποσοστό μεθ
+	ax[1].plot(df.date, df.beds_percent, label='Ποσοστό Κρεβατιών', color='b')   # δεύτερο chart για κρεβάτια μεθ
+	ax[2].plot(df.date, df.icu_out, label='Εκτώς ΜΕΘ', color='g')                # τρίτο για όσους βγηκαν απο μεθ
 
-	ax[0].set_title('Νοσηλευόμενοι σε ΜΕΘ')  # οι τρείς τίτλοι
+	ax[0].set_title('Νοσηλευόμενοι σε ΜΕΘ')                                      # οι τρείς τίτλοι
 	ax[1].set_title('Κρεβάτια ΜΕΘ')
 	ax[2].set_title('Νοσηλευόμενοι Εκτώς ΜΕΘ')
 	ax[2].set_xlabel('Ημερομηνίες (ανά Τετράμηνα)')
-	plt.xticks(df.date[::120])  # Οι Ημερομηνίες είναι ανά Τετράμηνα
+	ax[0].set_ylabel("Νοσηλευόμενοι σε ΜΕΘ")
+	ax[1].set_ylabel("Αριθμός Κρεβατιών")
+	ax[2].set_ylabel("Νοσηλευόμενοι Εκτώς ΜΕΘ")
+	plt.xticks(df.date[::120])                                                    # Οι Ημερομηνίες είναι ανά Τετράμηνα
 
 	ax[0].legend()
 	ax[1].legend()
