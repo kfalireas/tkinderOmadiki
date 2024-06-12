@@ -1,3 +1,4 @@
+import datetime
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -243,17 +244,16 @@ def vaccinations_and_actives(df):
 
 
 def pie_1(df):
-	fig, axes = plt.subplots(nrows=2, ncols=2,figsize=(8, 7))  # 4 pie charts σε 2 Οριζόντιους Άξονες και 2 Κάθετους
-        fig.suptitle(f'Καρτέλα Επισκόπησης {datetime.datetime.now().date()}')
-	
+	fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(8, 7))  # 4 pie charts σε 2 Οριζόντιους Άξονες και 2 Κάθετους
+	fig.suptitle(f'Καρτέλα Επισκόπησης {datetime.datetime.now().date()}')
+
 	tot_reinf = df.iloc[-1, 29]  # Eπαναμολύνσεις
 	tot_vacc = df.iloc[-1, 27]  # Eμβολιασμοί
 	confirmed = df.iloc[-1, 2]  # Eπιβεβαιομενα
 
 	Colors_1 = ['forestgreen', 'darkviolet', 'yellow']
 	naming = 'Επαναμολύνσεις', 'Εμβολιασμοί', 'Επιβεβαιομένα Κρούσματα'
-	axes[0, 0].pie([tot_reinf, tot_vacc, confirmed], labels=naming, colors=Colors_1,
-	               autopct='%1.1f%%')  # πρώτο pie chart
+	axes[0, 0].pie([tot_reinf, tot_vacc, confirmed], labels=naming, colors=Colors_1, autopct='%1.1f%%')  # πρώτο pie chart
 	axes[0, 0].set_title("Ποσοστό Επαναμολύνσεων,Εμβολιασμών και Άγνωστων Κρουσμάτων")
 
 	Colors_2 = ['cyan', 'darkolivegreen', 'orangered']
